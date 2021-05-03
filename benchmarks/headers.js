@@ -1,14 +1,14 @@
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads')
 
 function printResults (results, n) {
-  console.log(`Results for Header append:`)
+  console.log('Results for Header append:')
   const baselineTiming = Number.parseInt(results['undici-fetch'].endTime - results['undici-fetch'].startTime)
-  for (const [ key, timing ] of Object.entries(results)) {
+  for (const [key, timing] of Object.entries(results)) {
     const elapsedTT = Number.parseFloat(timing.endTime - timing.startTime)
     console.log(`${key.padEnd(25)} | total time: ${elapsedTT}ns (${(elapsedTT * 0.000001).toFixed(3)}ms)`)
   }
   console.log('---')
-  for (const [ key, timing ] of Object.entries(results)) {
+  for (const [key, timing] of Object.entries(results)) {
     if (key === 'undici-fetch') continue
     const elapsedTT = Number.parseFloat(timing.endTime - timing.startTime)
     const percent = ((baselineTiming - elapsedTT) / elapsedTT) * 100
@@ -114,7 +114,7 @@ if (isMainThread) {
 } else {
   const { headerType, commonHeaderKeys } = workerData
   let HeaderClass = null
-  switch(headerType) {
+  switch (headerType) {
     case 'undici-fetch': {
       HeaderClass = require('../src/headers').Headers
       break
@@ -127,7 +127,6 @@ if (isMainThread) {
       throw Error(`Invalid header class type ${headerType}`)
     }
   }
-
 
   const startTime = process.hrtime.bigint()
 
