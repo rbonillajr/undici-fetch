@@ -1,18 +1,23 @@
-const { Worker, isMainThread, parentPort, workerData } = require('worker_threads')
+import {
+  calcElapsedTime,
+  elapsedTimeToString,
+  calcPercentChange,
+  percentChangeToString
+} from './utils.mjs'
+
+import { createRequire } from 'node:module'
+import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads'
 
 function printResults (results, n) {
   console.log('Results for Header append:')
-  const baselineTiming = Number.parseInt(results['undici-fetch'].endTime - results['undici-fetch'].startTime)
+  const baselineTiming = calcElapsedTime(results['undici-fetch'])
   for (const [key, timing] of Object.entries(results)) {
-    const elapsedTT = Number.parseFloat(timing.endTime - timing.startTime)
-    console.log(`${key.padEnd(25)} | total time: ${elapsedTT}ns (${(elapsedTT * 0.000001).toFixed(3)}ms)`)
+    console.log(elapsedTimeToString(key, calcElapsedTime(timing)))
   }
   console.log('---')
   for (const [key, timing] of Object.entries(results)) {
     if (key === 'undici-fetch') continue
-    const elapsedTT = Number.parseFloat(timing.endTime - timing.startTime)
-    const percent = ((baselineTiming - elapsedTT) / elapsedTT) * 100
-    console.log(`undici-fetch <> ${key} percent change: ${percent.toFixed(3)}%`)
+    console.log(percentChangeToString(key, calcPercentChange(baselineTiming, calcElapsedTime(timing))))
   }
 }
 
@@ -88,7 +93,7 @@ if (isMainThread) {
   commonHeaderKeys.sort(() => Math.random() - 0.5)
 
   const spawnWorker = headerType => new Promise((resolve, reject) => {
-    const worker = new Worker(__filename, {
+    const worker = new Worker(new URL(import.meta.url), {
       workerData: { headerType, commonHeaderKeys }
     })
     worker.on('message', resolve)
@@ -114,6 +119,7 @@ if (isMainThread) {
 } else {
   const { headerType, commonHeaderKeys } = workerData
   let HeaderClass = null
+  const require = createRequire(import.meta.url)
   switch (headerType) {
     case 'undici-fetch': {
       HeaderClass = require('../src/headers').Headers
@@ -143,5 +149,5 @@ if (isMainThread) {
     startTime,
     endTime
   })
-  process.exit(1)
+  process.exit(0)
 }
