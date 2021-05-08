@@ -54,20 +54,18 @@ Promise.all([
   spawnWorker('iterate', 'undici-fetch', commonHeaderKeys),
   spawnWorker('iterate', 'node-fetch', commonHeaderKeys)
 ]).then(values => {
-  const results = values.reduce((acc, { operation, module, ...rest }) =>
-    ({
-      ...acc,
-      modules: [...(new Set([...acc.modules, module]))],
-      benchmarks: {
-        ...acc.benchmarks,
-        [operation]: {
-          ...acc.benchmarks[operation],
-          [module]: rest
-        }
-      }
-    }),
-  { modules: [], benchmarks: {} }
-  )
+  const modules = new Set()
+  const benchmarks = {}
+  for (let i = 0; i < values.length; i++) {
+    const { operation, module, ...rest } = values[i]
+    modules.add(module)
+    if (!benchmarks[operation]) benchmarks[operation] = {}
+    benchmarks[operation][module] = rest
+  }
+  const results = {
+    modules: Array.from(modules),
+    benchmarks
+  }
   printResults(results)
 }).catch(error => {
   console.error(error)
