@@ -50,12 +50,14 @@ function spawnWorker (operation, module, commonHeaderKeys) {
 
 Promise.all([
   spawnWorker('append', 'undici-fetch', commonHeaderKeys),
-  spawnWorker('append', 'node-fetch', commonHeaderKeys)
+  spawnWorker('append', 'node-fetch', commonHeaderKeys),
+  spawnWorker('iterate', 'undici-fetch', commonHeaderKeys),
+  spawnWorker('iterate', 'node-fetch', commonHeaderKeys)
 ]).then(values => {
   const results = values.reduce((acc, { operation, module, ...rest }) =>
     ({
       ...acc,
-      modules: [...acc.modules, module],
+      modules: [...(new Set([...acc.modules, module]))],
       benchmarks: {
         ...acc.benchmarks,
         [operation]: {
