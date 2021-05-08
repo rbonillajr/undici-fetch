@@ -3,20 +3,25 @@ function calcElapsedTime (timing) {
 }
 
 function elapsedTimeToString (key, elapsedTime) {
-  return `${key.padEnd(25)} | total time: ${elapsedTime}ns (${(elapsedTime * 0.000001).toFixed(3)}ms)`
+  return `${key.padEnd(10)} | total time: ${elapsedTime}ns (${(elapsedTime * 0.000001).toFixed(3)}ms)`
+}
+
+function totalTimeToString (totalTime) {
+  return `${totalTime}ns (${(totalTime * 0.000001).toFixed(3)}ms)`
 }
 
 function calcPercentChange (base, elapsedTime) {
   return ((base - elapsedTime) / elapsedTime) * 100
 }
 
-function percentChangeToString (key, percent) {
-  return `undici-fetch <> ${key} percent change: ${percent.toFixed(3)}%`
+function percentChangeToString (percentChange) {
+  return `${percentChange.toFixed(3)}%`
 }
 
 export {
   calcElapsedTime,
   elapsedTimeToString,
   calcPercentChange,
-  percentChangeToString
+  percentChangeToString,
+  totalTimeToString
 }
