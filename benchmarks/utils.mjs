@@ -11,7 +11,7 @@ function totalTimeToString (totalTime) {
 }
 
 function calcPercentChange (base, elapsedTime) {
-  return ((base - elapsedTime) / elapsedTime) * 100
+  return ((elapsedTime - base) / base) * 100
 }
 
 function percentChangeToString (percentChange) {

@@ -16,7 +16,8 @@ function printBenchmarkSuite (operation, benchmarks) {
     return {
       Module: module,
       'Total Time': totalTimeToString(totalTime),
-      'Percent Change': percentChange !== null ? percentChangeToString(percentChange) : null
+      // 'Percent Change': percentChange !== null ? percentChangeToString(percentChange) : null,
+      'Result': percentChange !== null ? `${percentChangeToString(Math.abs(percentChange))} ${percentChange > 0 ? 'slower' : 'faster'} than undici-fetch` : null
     }
   })
   console.table(output)
@@ -183,7 +184,7 @@ const valuesSuite = (module) => spawnSuite({
   }
 })
 
-const modules = [ 'undici-fetch', 'node-fetch' ]
+const modules = [ 'undici-fetch', 'node-fetch', './implementations/mapHeaders.js' ]
 const suites = [
   appendSuite,
   deleteSuite,
